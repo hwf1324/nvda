@@ -1,6 +1,6 @@
 # NVDA
 
-NVDA (NonVisual Desktop Access) is a free, open source screen reader for Microsoft Windows.
+NVDA (Non Visual Desktop Access)是一款免费，开源的Microsoft Windows屏幕阅读器。<!--NVDA (NonVisual Desktop Access) is a free, open source screen reader for Microsoft Windows.-->
 It is developed by NV Access in collaboration with a global community of contributors.
 To learn more about NVDA or download a copy, visit the main [NV Access](http://www.nvaccess.org/) website.
 
@@ -52,30 +52,30 @@ The `--recursive` option is needed to retrieve various Git submodules we use.
 ## Dependencies
 The NVDA source depends on several other packages to run correctly.
 
-### Installed Dependencies
-The following dependencies need to be installed on your system:
+### 已安装的依赖项<!--Installed Dependencies-->
+需要在您的系统上安装以下依赖项：<!--The following dependencies need to be installed on your system:-->
 
-* [Python](https://www.python.org/), version 3.7, 32 bit
-	* Use latest minor version if possible.
+* [Python](https://www.python.org/)，版本3.7，32位<!--[Python](https://www.python.org/), version 3.7, 32 bit-->
+	* 如果可能，请使用最新的次要版本。<!--Use latest minor version if possible.-->
 * Microsoft Visual Studio 2019 Community, Version 16.3 or later:
-	* Download from https://visualstudio.microsoft.com/vs/
-	* When installing Visual Studio, you need to enable the following:
-		* On the Workloads tab
-			* in the Windows group:
-				* Desktop development with C++
-			* Then in the Installation details section, under Desktop for C++, Optional grouping, ensure the following are selected:
-				* MSVC v142 - VS 2019 C++ x64/x86 build tools
-				* Windows 10 SDK (10.0.19041.0)
-				* C++ ATL for v142 build tools (x86 & x64)
-				* C++ Clang tools for Windows
-		* On the Individual components tab, ensure the following items are selected:
-			* MSVC v142 - VS 2019 C++ ARM64 build tools
-			* C++ ATL for v142 build tools (ARM64)
+	* 从 https://visualstudio.microsoft.com/vs/ 下载<!--Download from https://visualstudio.microsoft.com/vs/ -->
+	* 安装Visual Studio时，你需要启用以下功能：<!--When installing Visual Studio, you need to enable the following:-->
+		* 在工作负载选项卡上（译注：不知为何安装器目前的翻译为“工作负荷”）<!--On the Workloads tab-->
+			* 在桌面应用和移动应用组中：<!--in the Windows group:-->
+				* 使用c++的桌面开发<!--Desktop development with C++-->
+			* 然后在安装详细信息部分，在使用C++的桌面开发下，可选分组，确保选择以下内容：<!--Then in the Installation details section, under Desktop for C++, Optional grouping, ensure the following are selected:-->
+				* MSVC v142 - VS 2019 C++ x64/86 生成工具（译注：有好几项其实都带有最新的标注，我也不知道该选什么版本，所以索性就按最新选吧。）<!--MSVC v142 - VS 2019 C++ x64/x86 build tools-->
+				* Windows 10 SDK (10.0.19041.0)<!--Windows 10 SDK (10.0.19041.0)-->
+				* 适用于 v142 生成工具的 C++ ATL (x86 和 x64)<!--C++ ATL for v142 build tools (x86 & x64)-->
+				* 适用于 Windows 的 C++ Clang 工具<!--C++ Clang tools for Windows-->
+		* 在单个组件选项卡上，确保选择以下项目：<!--On the Individual components tab, ensure the following items are selected:-->
+			* MSVC v142 - VS 2019 C++ ARM64 生成工具（译注：这一项目前可以在可选分组里找到。）<!--MSVC v142 - VS 2019 C++ ARM64 build tools-->
+			* 适用于 v142 生成工具的 C++ ATL (ARM64)<!--C++ ATL for v142 build tools (ARM64)-->
 
 
-### Git Submodules
-Some of the dependencies are contained in Git submodules.
-If you didn't pass the `--recursive` option to git clone, you will need to run `git submodule update --init`.
+### Git子模块<!--Git Submodules-->
+一些依赖项包含在Git子模块中。<!--Some of the dependencies are contained in Git submodules.-->
+如果您没有将`--recursive`选项传递给git clone，您将需要运行`git submodule update --init`。<!--If you didn't pass the `--recursive` option to git clone, you will need to run `git submodule update --init`.-->
 Whenever a required submodule commit changes (e.g. after git pull), you will need to run `git submodule update`.
 If you aren't sure, run `git submodule update` after every git pull, merge or checkout.
 
