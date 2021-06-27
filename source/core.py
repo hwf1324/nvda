@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-"""NVDA core"""
+"""NVDA 核心（NVDA core）"""
 
 RPC_E_CALL_CANCELED = -2147418110
 

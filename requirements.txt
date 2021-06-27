@@ -1,7 +1,7 @@
-# NVDA's build system is SCons
+# NVDA 的构建系统是 SCons（NVDA's build system is SCons）
 SCons==4.1.0.post1
 
-# NVDA's runtime dependencies
+# NVDA 的运行时依赖（NVDA's runtime dependencies）
 comtypes==1.1.8
 pyserial==3.5
 wxPython==4.1.1
@@ -13,7 +13,7 @@ diff_match_patch_python==1.0.2
 # Packaging NVDA
 py2exe==0.10.1.0
 
-# For building developer documentation
+# 用于构建开发者文档（For building developer documentation）
 sphinx==3.4.1
 sphinx_rtd_theme
 

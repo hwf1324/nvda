@@ -8,26 +8,26 @@ import sys
 import os
 import platform
 
-# Ensure we are inside the Python virtual environment.
+# 确保我们在 Python 虚拟环境中。（Ensure we are inside the Python virtual environment.）
 nvdaVenv = os.getenv("NVDA_VENV")
 virtualEnv = os.getenv("VIRTUAL_ENV")
 if not virtualEnv or not os.path.isdir(virtualEnv): 
 	print(
-		"Error: SCons cannot detect the NVDA build system Python virtual environment.\n"
-		"SCons must be executed using scons.bat in the root of this repository."
+		"错误：SCons 无法检测到 NVDA 构建系统中的 Python 虚拟环境。\n"  # "Error: SCons cannot detect the NVDA build system Python virtual environment.\n"
+		"SCons 必须使用此存储库根目录中的 scons.bat 执行。"  # "SCons must be executed using scons.bat in the root of this repository.""
 	)
 	sys.exit(1)
 if nvdaVenv != virtualEnv:
-	print("Warning: SCons launched within a custom Python virtual environment.")
+	print("警告：SCons 在自定义 Python 虚拟环境中启动。")  # "Warning: SCons launched within a custom Python virtual environment."
 
-# Variables for storing required version of Python, and the version which is used to run this script.
+# 用于存储所需 Python 版本的变量，以及用于运行此脚本的版本。（Variables for storing required version of Python, and the version which is used to run this script.）
 requiredPythonMajor ="3"
 requiredPythonMinor = "7"
 requiredPythonArchitecture = "32bit"
 installedPythonMajor = str(sys.version_info.major)
 installedPythonMinor = str(sys.version_info.minor)
 installedPythonArchitecture = platform.architecture()[0]
-# Ensure that we are running with required version of Python, otherwise inform the user and exit.
+# 确保我们使用所需版本的 Python 运行，否则通知用户并退出。（Ensure that we are running with required version of Python, otherwise inform the user and exit.）
 if (
 	installedPythonArchitecture != requiredPythonArchitecture
 	or installedPythonMajor != requiredPythonMajor
@@ -70,7 +70,7 @@ def recursiveCopy(env,targetDir,sourceDir):
 			targets.append(dNode)
 	return targets
 
-# Import NVDA's versionInfo module.
+# 导入 NVDA 的 versionInfo 模块。（Import NVDA's versionInfo module.）
 import gettext
 gettext.install("nvda")
 sys.path.append("source")
@@ -79,7 +79,7 @@ del sys.path[-1]
 
 makensis = "miscDeps\\tools\\NSIS\\makensis"
 
-# Get the path to xgettext.
+# 获取 xgettext 的路径。（Get the path to xgettext.）
 XGETTEXT = os.path.abspath(os.path.join("miscDeps", "tools", "xgettext.exe"))
 
 def keyCommandsDocTool(env):
@@ -121,19 +121,19 @@ env = Environment(variables=vars,HOST_ARCH='x86',tools=[
 	"recursiveInstall"
 ])
 
-# speed up subsiquent runs by checking timestamps of targets and dependencies, and only using md5 if timestamps differ.
+# 通过检查目标和依赖项的时间戳来加速后续运行，并且只有在时间戳不同时才使用 md5。（speed up subsiquent runs by checking timestamps of targets and dependencies, and only using md5 if timestamps differ.）
 env.Decider('MD5-timestamp')
 
 #Make our recursiveCopy function available to any script using this environment
 env.AddMethod(recursiveCopy)
 
-#Check for any unknown variables
+# 检查任何未知变量（Check for any unknown variables）
 unknown=vars.UnknownVariables().keys()
 if len(unknown)>0:
-	print("Unknown commandline variables: %s"%unknown)
+	print("未知的命令行变量：%s"%unknown)  # Unknown commandline variables: 
 	Exit(1)
 
-#Ensure that any Python subprocesses (such as for py2exe) can find our Python directory in miscDeps
+# 确保任何 Python 子进程（例如 py2exe）都可以在 miscDeps 中找到我们的 Python 目录（Ensure that any Python subprocesses (such as for py2exe) can find our Python directory in miscDeps）
 env['ENV']['PYTHONPATH']=";".join(sourceEnv.PYTHON_DIRS)
 
 env["copyright"]=versionInfo.copyright
@@ -175,19 +175,19 @@ if certTimestampServer:
 	signExecCmd.extend(("/tr", certTimestampServer, "/td", "SHA256"))
 def signExec(target,source,env):
 	print([str(x) for x in target])
-	#sys.exit(1)
+	# sys.exit(1)
 	# #3795: signtool can quite commonly fail with timestamping, so allow it to try up to 3 times with a 1 second delay between each try. 
 	res=0
 	for count in range(3):
 		res=env.Execute([signExecCmd+[target[0].abspath]])
 		if not res:
-			return 0 # success
+			return 0  # 成功（success）
 		time.sleep(1)
-	return res # failed
-#Export via scons environment so other libraries can be signed
+	return res  # 失败（failed）
+# 通过 scons 环境导出，以便可以对其他库进行签名（Export via scons environment so other libraries can be signed）
 env['signExec']=signExec
 
-#architecture-specific environments
+# 特定于架构的环境（architecture-specific environments）
 archTools=['default','midl','msrpc']
 env32=env.Clone(TARGET_ARCH='x86',tools=archTools)
 env64=env.Clone(TARGET_ARCH='x86_64',tools=archTools)
