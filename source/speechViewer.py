@@ -107,6 +107,24 @@ class SpeechViewerFrame(
 		if isLockScreenModeActive():
 			self.shouldShowOnStartupCheckBox.Disable()
 
+		self.onlyTheLastSpeechIsDisplayedCheckBox = wx.CheckBox(
+			parent,
+			# Translators: The label for a setting in the speech viewer that controls
+			# whether only the last speech is displayed or not.
+			label=_("&Only show the last speech")
+		)
+		optionsSizer.Add(
+			self.onlyTheLastSpeechIsDisplayedCheckBox,
+			flag=wx.EXPAND
+		)
+		self.onlyTheLastSpeechIsDisplayedCheckBox.SetValue(
+			config.conf["speechViewer"]["onlyTheLastSpeechIsDisplayed"]
+		)
+		self.onlyTheLastSpeechIsDisplayedCheckBox.Bind(
+			wx.EVT_CHECKBOX,
+			self.onOnlyTheLastSpeechIsDisplayedChanged
+		)
+
 		sizer.Add(
 			optionsSizer,
 			border=5,
@@ -129,6 +147,10 @@ class SpeechViewerFrame(
 	def onShouldShowOnStartupChanged(self, evt: wx.CommandEvent):
 		if not isLockScreenModeActive():
 			config.conf["speechViewer"]["showSpeechViewerAtStartup"] = self.shouldShowOnStartupCheckBox.IsChecked()
+
+	def onOnlyTheLastSpeechIsDisplayedChanged(self, evt: wx.CommandEvent):
+		config.conf["speechViewer"]["onlyTheLastSpeechIsDisplayed"] \
+		= self.onlyTheLastSpeechIsDisplayedCheckBox.IsChecked()
 
 	_isDestroyed: bool
 
@@ -206,7 +228,11 @@ def appendSpeechSequence(sequence: SpeechSequence) -> None:
 	text = SPEECH_ITEM_SEPARATOR.join(
 		speech for speech in sequence if isinstance(speech, str)
 	)
-	_guiFrame.textCtrl.AppendText(text + SPEECH_SEQUENCE_SEPARATOR)
+	isOnlyLastSpeech: bool = config.conf["speechViewer"]["onlyTheLastSpeechIsDisplayed"]
+	if isOnlyLastSpeech:
+		_guiFrame.textCtrl.Clear()
+	# No sequence separator added when only the last speech is displayed
+	_guiFrame.textCtrl.AppendText(text + ("" if isOnlyLastSpeech else SPEECH_SEQUENCE_SEPARATOR))
 
 
 def _cleanup():

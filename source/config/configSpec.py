@@ -128,6 +128,7 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 
 [speechViewer]
 	showSpeechViewerAtStartup = boolean(default=false)
+	onlyTheLastSpeechIsDisplayed = boolean(default=false)
 	autoPositionWindow = boolean(default=True)
 	# Values for positioning the window.
 	# Defaults are not used.
