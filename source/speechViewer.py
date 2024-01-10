@@ -87,16 +87,17 @@ class SpeechViewerFrame(
 			flag=wx.EXPAND
 		)
 
+		optionsSizer = wx.BoxSizer(wx.HORIZONTAL)
+
 		self.shouldShowOnStartupCheckBox = wx.CheckBox(
 			parent,
 			# Translators: The label for a setting in the speech viewer that controls
 			# whether the speech viewer is shown at startup or not.
 			label=_("&Show Speech Viewer on Startup")
 		)
-		sizer.Add(
+		optionsSizer.Add(
 			self.shouldShowOnStartupCheckBox,
-			border=5,
-			flag=wx.EXPAND | wx.ALL
+			flag=wx.EXPAND
 		)
 		self.shouldShowOnStartupCheckBox.SetValue(config.conf["speechViewer"]["showSpeechViewerAtStartup"])
 		self.shouldShowOnStartupCheckBox.Bind(
@@ -105,6 +106,12 @@ class SpeechViewerFrame(
 		)
 		if isLockScreenModeActive():
 			self.shouldShowOnStartupCheckBox.Disable()
+
+		sizer.Add(
+			optionsSizer,
+			border=5,
+			flag=wx.EXPAND | wx.ALL
+		)
 
 	def _onDialogActivated(self, evt):
 		# Check for destruction, if the speechviewer window has focus when we exit NVDA it regains focus briefly
