@@ -138,6 +138,10 @@ schemaVersion = integer(min=0, default={latestSchemaVersion})
 	width = integer()
 	height = integer()
 	displays = string_list()
+	# Value used to hold font information.
+	# Defaults are not used.
+	nativeFontInfoDesc = string(default="")
+	fontColor = string(default="rgb(0, 0, 0)")
 
 [brailleViewer]
 	showBrailleViewerAtStartup = boolean(default=false)

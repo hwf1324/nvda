@@ -86,6 +86,17 @@ class SpeechViewerFrame(
 			proportion=1,
 			flag=wx.EXPAND
 		)
+		self.nativeFont: wx.Font = wx.Font()
+		if self.nativeFont.SetNativeFontInfo(config.conf["speechViewer"]["nativeFontInfoDesc"]):
+			self.fontColor: wx.Colour = wx.Colour(config.conf["speechViewer"]["fontColor"])
+			self.textCtrl.SetDefaultStyle(
+				wx.TextAttr(
+					colText=self.fontColor,
+					font=self.nativeFont
+				)
+			)
+		else:
+			self.nativeFont = None
 
 		optionsSizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -125,6 +136,23 @@ class SpeechViewerFrame(
 			self.onOnlyTheLastSpeechIsDisplayedChanged
 		)
 
+		optionsSizer.AddStretchSpacer()
+
+		self.fontButton = wx.Button(
+			parent,
+			# Translators: The label for a button in the speech viewer
+			# the font used to change the speech.
+			label=_("&Font...")
+		)
+		self.fontButton.Bind(
+			wx.EVT_BUTTON,
+			self.onFontButton
+		)
+		optionsSizer.Add(
+			self.fontButton,
+			flag=wx.EXPAND
+		)
+
 		sizer.Add(
 			optionsSizer,
 			border=5,
@@ -151,6 +179,33 @@ class SpeechViewerFrame(
 	def onOnlyTheLastSpeechIsDisplayedChanged(self, evt: wx.CommandEvent):
 		config.conf["speechViewer"]["onlyTheLastSpeechIsDisplayed"] \
 		= self.onlyTheLastSpeechIsDisplayedCheckBox.IsChecked()
+
+	def onFontButton(self, evt: wx.CommandEvent):
+		fontData: wx.FontData = wx.FontData()
+
+		if self.nativeFont is not None:
+			fontData.SetInitialFont(self.nativeFont)
+			fontData.SetColour(self.fontColor)
+		else:
+			fontData.SetInitialFont(self.textCtrl.GetFont())
+
+		dialog: wx.FontDialog = wx.FontDialog(self.panel, fontData)
+
+		if dialog.ShowModal() == wx.ID_OK:
+			fontData = dialog.GetFontData()
+			self.nativeFont = fontData.GetChosenFont()
+			self.fontColor = fontData.GetColour()
+			if self.nativeFont.IsOk():
+				config.conf["speechViewer"]["nativeFontInfoDesc"] = self.nativeFont.GetNativeFontInfoDesc()
+				config.conf["speechViewer"]["fontColor"] = self.fontColor.GetAsString(wx.C2S_CSS_SYNTAX)
+				self.textCtrl.SetDefaultStyle(
+					wx.TextAttr(
+						self.fontColor,
+						font=self.nativeFont
+					)
+				)
+
+		dialog.Destroy()
 
 	_isDestroyed: bool
 
