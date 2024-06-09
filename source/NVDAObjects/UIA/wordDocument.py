@@ -6,6 +6,7 @@
 from typing import (
 	Optional,
 	Dict,
+	Generator,
 )
 
 import enum
@@ -38,6 +39,7 @@ from NVDAObjects import NVDAObject
 from scriptHandler import script
 import eventHandler
 from globalCommands import SCRCAT_SYSTEMCARET
+import documentBase
 
 """Support for Microsoft Word via UI Automation."""
 
@@ -424,7 +426,7 @@ class WordDocumentTextInfo(UIATextInfo):
 		formatField = super()._getFormatFieldAtRange(textRange, formatConfig, ignoreMixedValues=ignoreMixedValues)
 		if not formatField:
 			return formatField
-		if winVersion.getWinVer() >= winVersion.WIN11:
+		if UIARemote.isSupported():
 			docElement = self.obj.UIAElement
 			if formatConfig['reportLineNumber']:
 				lineNumber = UIARemote.msWord_getCustomAttributeValue(
@@ -514,6 +516,17 @@ class WordBrowseModeDocument(UIABrowseModeDocument):
 
 	ElementsListDialog=ElementsListDialog
 
+	def _iterTextStyle(
+			self,
+			kind: str,
+			direction: documentBase._Movement = documentBase._Movement.NEXT,
+			pos: textInfos.TextInfo | None = None
+	) -> Generator[browseMode.TextInfoQuickNavItem, None, None]:
+		raise NotImplementedError(
+			"word textInfos are not supported due to multiple issues with them - #16569"
+		)
+
+
 class WordDocumentNode(UIA):
 	TextInfo=WordDocumentTextInfo
 
@@ -554,12 +567,6 @@ class WordDocument(UIADocumentWithTableNavigation,WordDocumentNode,WordDocumentB
 		# such as "delete back word" when Control+Backspace is pressed.
 		if activityId == "AccSN2":  # Delete activity ID
 			return
-		# copy to clipboard
-		if activityId == 'AccSN3':
-			ti = self.treeInterceptor
-			if ti and not ti.passThrough:
-				# Browse mode provides its own copy to clipboard message.
-				return
 		super(WordDocument, self).event_UIA_notification(**kwargs)
 
 	# The following overide of the EditableText._caretMoveBySentenceHelper private method

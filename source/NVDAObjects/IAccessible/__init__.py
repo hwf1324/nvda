@@ -958,8 +958,12 @@ the NVDAObject for IAccessible
 		IAccessible2States = self.IA2States
 		states |= IAccessibleHandler.getStatesSetFromIAccessible2States(IAccessible2States)
 
-		# Readonly should override editable
-		if controlTypes.State.READONLY in states:
+		# Readonly should override editable, except in the case of lists and listitems, where the readonly state
+		# differentiates between interactive and non-interactive lists in Firefox.
+		if (
+			self.role not in (controlTypes.Role.LIST, controlTypes.Role.LISTITEM)
+			and controlTypes.State.READONLY in states
+		):
 			states.discard(controlTypes.State.EDITABLE)
 		try:
 			IA2Attribs=self.IA2Attributes
@@ -1722,6 +1726,11 @@ the NVDAObject for IAccessible
 
 	def _get_flowsFrom(self) -> typing.Optional["IAccessible"]:
 		return self._getIA2RelationFirstTarget(IAccessibleHandler.RelationType.FLOWS_FROM)
+	
+	def _get_errorMessage(self) -> str | None:
+		errorNode = self._getIA2RelationFirstTarget(IAccessibleHandler.RelationType.ERROR)
+		if errorNode is not None:
+			return errorNode.summarizeInProcess()
 
 	def event_valueChange(self):
 		if isinstance(self, EditableTextWithAutoSelectDetection):
