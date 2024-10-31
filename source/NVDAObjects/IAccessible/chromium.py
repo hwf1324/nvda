@@ -203,12 +203,13 @@ class RedirectDocument(ia2Web.Ia2Web):
 		return obj
 
 
-def findExtraOverlayClasses(obj, clsList):
+def findExtraOverlayClasses(obj: IAccessible, clsList: list):
 	"""Determine the most appropriate class(es) for Chromium objects.
 	This works similarly to L{NVDAObjects.NVDAObject.findOverlayClasses} except that it never calls any other findOverlayClasses method.
 	"""
 	if (
-		obj.role == controlTypes.Role.PANE
+		winUser.getClassName(obj.IA2WindowHandle) == "Chrome_WidgetWin_1"
+		and obj.role == controlTypes.Role.PANE
 		and obj.previous
 		and obj.previous.lastChild
 		and obj.previous.lastChild.windowClassName == "Chrome_RenderWidgetHostHWND"
