@@ -208,7 +208,8 @@ def findExtraOverlayClasses(obj: IAccessible, clsList: list):
 	This works similarly to L{NVDAObjects.NVDAObject.findOverlayClasses} except that it never calls any other findOverlayClasses method.
 	"""
 	if (
-		winUser.getClassName(obj.IA2WindowHandle) == "Chrome_WidgetWin_1"
+		obj.IA2Attributes == {"class": "View"}
+		and winUser.getClassName(obj.IA2WindowHandle) == "Chrome_WidgetWin_1"
 		and obj.role == controlTypes.Role.PANE
 		and obj.previous
 		and obj.previous.lastChild
