@@ -133,6 +133,7 @@ class HighlightWindow(CustomWindow):
 			extendedWindowStyle=self.extendedWindowStyle,
 		)
 		self.location = None
+		self.dirtyRect = None
 		self.highlighterRef = weakref.ref(highlighter)
 		winUser.SetLayeredWindowAttributes(
 			self.handle,
@@ -143,6 +144,7 @@ class HighlightWindow(CustomWindow):
 		self.updateLocationForDisplays()
 		if not user32.UpdateWindow(self.handle):
 			raise WinError()
+		core.callLater(100, self.refresh)
 
 	def windowProc(self, hwnd, msg, wParam, lParam):
 		if msg == winUser.WM_PAINT:
@@ -189,6 +191,7 @@ class HighlightWindow(CustomWindow):
 			return
 		with winUser.paint(self.handle) as hdc:
 			with winGDI.GDIPlusGraphicsContext(hdc) as graphicsContext:
+				dirtyContextRects = set()
 				for context, rect in contextRects.items():
 					HighlightStyle = highlighter._ContextStyles[context]
 					# Before calculating logical coordinates,
@@ -209,9 +212,12 @@ class HighlightWindow(CustomWindow):
 						HighlightStyle.style,
 					) as pen:
 						winGDI.gdiPlusDrawRectangle(graphicsContext, pen, *rect.toLTWH())
+					dirtyContextRects.add(rect)
+				self.dirtyRect = RectLTWH.fromCollection(*dirtyContextRects)
+		highlighter.lastContextRectMap = highlighter.contextToRectMap.copy()
 
-	def refresh(self):
-		user32.InvalidateRect(self.handle, None, True)
+	def refresh(self, lpRect=None):
+		user32.InvalidateRect(self.handle, lpRect, True)
 
 
 _contextOptionLabelsWithAccelerators = {
@@ -392,7 +398,7 @@ class NVDAHighlighter(providerBase.VisionEnhancementProvider):
 		Context.FOCUS_NAVIGATOR: SOLID_BLUE,
 		Context.BROWSEMODE: SOLID_YELLOW,
 	}
-	_refreshInterval = 100
+	_refreshInterval = 1000
 	customWindowClass = HighlightWindow
 	_settings = NVDAHighlighterSettings()
 	_window: Optional[customWindowClass] = None
@@ -421,11 +427,12 @@ class NVDAHighlighter(providerBase.VisionEnhancementProvider):
 		extensionPoints.post_focusChange.register(self.handleFocusChange)
 		extensionPoints.post_reviewMove.register(self.handleReviewMove)
 		extensionPoints.post_browseModeMove.register(self.handleBrowseModeMove)
+		extensionPoints.post_coreCycle.register(self.refresh)
 
 	def __init__(self):
 		super().__init__()
 		log.debug("Starting NVDAHighlighter")
-		self.contextToRectMap = {}
+		self.lastContextRectMap = self.contextToRectMap = {}
 		winGDI.gdiPlusInitialize()
 		self._highlighterThread = threading.Thread(
 			name=f"{self.__class__.__module__}.{self.__class__.__qualname__}",
@@ -449,6 +456,7 @@ class NVDAHighlighter(providerBase.VisionEnhancementProvider):
 			self._highlighterThread = None
 		winGDI.gdiPlusTerminate()
 		self.contextToRectMap.clear()
+		self.lastContextRectMap.clear()
 		super().terminate()
 
 	def _run(self):
@@ -503,8 +511,9 @@ class NVDAHighlighter(providerBase.VisionEnhancementProvider):
 
 	def refresh(self):
 		"""Refreshes the screen positions of the enabled highlights."""
-		if self._window and self._window.handle:
-			self._window.refresh()
+		if self._window and self._window.handle and self._window.dirtyRect and self.lastContextRectMap != self.contextToRectMap:
+			self._window.refresh(lpRect=self._window.dirtyRect.toRECT())
+			self._window.dirtyRect = None
 
 	def _get_enabledContexts(self):
 		"""Gets the contexts for which the highlighter is enabled."""
