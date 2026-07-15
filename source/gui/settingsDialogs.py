@@ -1598,7 +1598,7 @@ class AutoSettingsMixin(metaclass=ABCMeta):
 		self.getSettings().saveSettings()
 
 	def refreshGui(self):
-		if not self._currentSettingsRef():
+		if self._currentSettingsRef() != getSynth():
 			if gui._isDebug():
 				log.debug("refreshing panel")
 			self.sizerDict.clear()

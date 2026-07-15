@@ -53,6 +53,7 @@
 Previously these keys had no function when pressed on their own. (#20366, @fla-rion)
 * The HID keyboard input simulation setting for ALVA braille displays is now remembered across reconnects and restarts. (#20455, @Cary-rowen)
 * Braille now follows the spoken text during say all in browse mode when braille is tethered to focus. (#3287, @LeonarddeR)
+* Fix the bug where the voice settings panel fails to refresh in the Speech settings dialog when switching from the OneCore synthesizer to another synthesizer (such as SAPI 5) within the same dialog instance. (#13042, #16112, @hwf1324)
 
 ### Changes for Developers
 
